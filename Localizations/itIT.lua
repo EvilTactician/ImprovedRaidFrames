@@ -1,0 +1,15 @@
+﻿-- Improved Raid Frames is a World of Warcraft® user interface addon, based on Enhanced Raid Frames.
+-- Copyright (c) 2017-2023 Britt W. Yazel
+-- This code is licensed under the MIT license (see LICENSE for details)
+
+local L = LibStub("AceLocale-3.0"):NewLocale("ImprovedRaidFrames", "itIT", false)
+
+if not L then
+	return
+end
+
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
+
+
