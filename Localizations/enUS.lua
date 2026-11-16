@@ -329,8 +329,8 @@ L["healAbsorbs_desc"] = "Show effects that absorb healing, such as Necrotic Stri
 -- Playerbot heals
 L["Playerbot Heals"] = true
 L["Show Playerbot Heals"] = true
-L["botHeals_desc"] = "Ask the server to send the heals cast by playerbots. Requires the mod-playerbot-heal-tracker module on the server."
-L["botHeals_longdesc"] = "Playerbots don't run addons, so normally their heals never show as incoming heals. The AzerothCore server module |cffffd100mod-playerbot-heal-tracker|r sends them for the bots. This option only works on servers that run mod-playerbots together with that module; on any other server, leave it off."
+L["botHeals_desc"] = "Ask the server to send the heals cast by playerbots. Requires the mod-playerbot-heal-tracker module on the server. If another addon (such as DragonUI) also asks for them, they keep showing until you log out, even with this option off."
+L["botHeals_longdesc"] = "Playerbots don't run addons, so normally their heals never show as incoming heals. The AzerothCore server module |cffffd100mod-playerbot-heal-tracker|r sends them for the bots. This option only works on servers that run mod-playerbots together with that module; on any other server, leave it off.\n\nThe heals arrive like any other incoming heal, so every addon that shows incoming heals displays them. If another addon (such as DragonUI) also asks for them, they keep showing until you log out, even with this option off."
 L["Server module:"] = true
 L["botHealsStatusOff"] = "not requested (option is off)"
 L["botHealsStatusWaiting"] = "waiting for the server to answer..."

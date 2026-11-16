@@ -13,8 +13,12 @@
 --
 -- Protocol (addon messages, prefix IRFBH, whispered to ourselves so the server can see them):
 --   client -> server   HELLO:<protocol>        start sending playerbot heal data to me
---   client -> server   BYE:<protocol>          stop sending it
+--   client -> server   BYE:<protocol>          stop sending it (we never send this, see below)
 --   server -> client   ACK:<protocol>:<moduleVersion>
+--
+-- The server keeps one flag per player and doesn't know which addon asked. Other addons (DragonUI) send HELLO too, so
+-- a BYE from us would switch the bot heals off for them as well. We therefore never send BYE: turning the option off
+-- just stops us asking, and the server forgets the request at logout.
 
 -- Create a local handle to our addon table
 ---@type ImprovedRaidFrames
@@ -40,7 +44,7 @@ ImprovedRaidFrames.botHealStatus = ImprovedRaidFrames.BOT_HEALS_OFF
 -------------------------------------------------------------------------
 
 --- Send a message to the server module
----@param command string @HELLO or BYE
+---@param command string @HELLO
 local function SendToServer(command)
 	SendAddonMessage(PREFIX, command .. ":" .. PROTOCOL, "WHISPER", UnitName("player"))
 end
@@ -68,7 +72,7 @@ function ImprovedRaidFrames:NotifyBotHealStatusChanged()
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("IRF Heal Prediction Options")
 end
 
---- Ask the server for playerbot heal data, or tell it to stop, to match the current option
+--- Ask the server for playerbot heal data if the option is on. Turning the option off sends nothing (see above).
 function ImprovedRaidFrames:UpdateBotHealSubscription()
 	if not self.db then
 		return
@@ -98,9 +102,13 @@ function ImprovedRaidFrames:UpdateBotHealSubscription()
 		if not self.botHealsSubscribed then
 			return
 		end
+		-- No BYE: that would also switch the bot heals off for other addons that asked for them
 		self.botHealsSubscribed = false
 		self.botHealStatus = self.BOT_HEALS_OFF
-		SendToServer("BYE")
+		if self.botHealAckTimer then
+			self:CancelTimer(self.botHealAckTimer)
+			self.botHealAckTimer = nil
+		end
 	end
 
 	self:NotifyBotHealStatusChanged()

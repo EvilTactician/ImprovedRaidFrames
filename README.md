@@ -4,7 +4,7 @@ WoW 3.3.5a addon which replaces and improves upon both **Enhanced Raid Frames** 
 
 Improved Raid Frames builds on the **Compact Raid Frames** backport of the retail raid frames. It adds configurable aura indicators, heal prediction and absorb shields, a right-click menu that no longer causes "action blocked" errors, Ctrl-click focus, and a set of performance improvements that matter most in 25 and 40-player raids.
 
-> **Version 1.0.1.** Tested against Compact Raid Frames 1.14 and !!!ClassicAPI 1.32.
+> **Version 1.0.2.** Tested against Compact Raid Frames 1.14 and !!!ClassicAPI 1.32.
 
 ## Requirements
 
@@ -87,6 +87,8 @@ Other players' heals only show if they run an addon that shares them through Lib
 Playerbots don't run addons, so their heals never show as incoming heals. With the [mod-playerbot-heal-tracker](https://github.com/EvilTactician/mod-playerbot-heal-tracker) server module installed, the server sends them on the bots' behalf, in the standard LibHealComm-4.0 format, so any addon using LibHealComm-4.0 shows them.
 
 Turn on **Show Playerbot Heals** under **Heal Prediction**. The options page shows whether the server module was detected. The option only works on servers that run mod-playerbots together with that module; on any other server, leave it off.
+
+The server keeps one request per player and doesn't know which addon made it. Other addons (such as DragonUI) can ask for the heals too, so Improved Raid Frames never tells the server to stop: turning the option off just stops it asking, and the server forgets the request at logout. If another addon has asked, the heals keep showing everywhere (they are ordinary incoming heals to every addon) until you log out.
 
 ### Performance
 
