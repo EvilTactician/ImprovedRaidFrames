@@ -4,7 +4,7 @@ WoW 3.3.5a addon which replaces and improves upon both **Enhanced Raid Frames** 
 
 Improved Raid Frames builds on the **Compact Raid Frames** backport of the retail raid frames. It adds configurable aura indicators, heal prediction and absorb shields, a right-click menu that no longer causes "action blocked" errors, Ctrl-click focus, and a set of performance improvements that matter most in 25 and 40-player raids.
 
-> **Status:** early version (0.x). Tested against Compact Raid Frames 1.14 and !!!ClassicAPI 1.32.
+> **Version 1.0.0.** Tested against Compact Raid Frames 1.14 and !!!ClassicAPI 1.32.
 
 ## Requirements
 
