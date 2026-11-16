@@ -22,6 +22,12 @@ function ImprovedRaidFrames:CreateGeneralOptions()
 		childGroups = "tree",
 		name = L["General Options"],
 		args = {
+			version = {
+				type = "description",
+				name = L["Version"] .. " " .. tostring(GetAddOnMetadata("ImprovedRaidFrames", "Version")),
+				fontSize = "medium",
+				order = 1,
+			},
 			instructions = {
 				type = "description",
 				name = L["generalOptions_desc"],

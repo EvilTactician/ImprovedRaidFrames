@@ -285,6 +285,7 @@ L["erfImportDone"] = "Your Enhanced Raid Frames settings have been copied.\n\nRe
 L["erfImportUnavailable"] = "Enhanced Raid Frames settings were not found. Enable Enhanced Raid Frames, reload the UI, and try again."
 
 -- Focus and menu
+L["Version"] = true
 L["Focus and Menu"] = true
 L["focusOptions_desc"] = "Ctrl-left-click a raid frame to set your focus to that unit, in or out of combat.\n\nThe right-click menu is Improved Raid Frames' own, so it no longer causes \"action blocked\" errors elsewhere in the UI. Its \"Set Focus\" line works out of combat; in combat the game doesn't allow it, so use Ctrl-left-click. In a raid, the leader and assistants can set Main Tank and Main Assist from the menu (out of combat). Raid target icons are on Compact Raid Frames' slide-out manager."
 L["secureHint"] = "That action couldn't be done from the menu. Close the menu and try again, or Ctrl-left-click a raid frame to set your focus."
