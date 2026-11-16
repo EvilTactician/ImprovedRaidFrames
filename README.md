@@ -1,6 +1,15 @@
 # ImprovedRaidFrames
 
-WoW 3.3.5a addon which replaces and improves upon both **Enhanced Raid Frames** and **Compact Raid Frames: Heal Extension** (CompactRaidFrame_HealEx).
+<div align="center">
+
+![Interface Version](https://img.shields.io/badge/Interface-30300-blue)
+![WoW Version](https://img.shields.io/badge/WoW-3.3.5a-orange)
+[![Version](https://img.shields.io/badge/Version-1.0.2-green)](https://github.com/EvilTactician/ImprovedRaidFrames)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+
+**WoW 3.3.5a addon which replaces and improves upon both **Enhanced Raid Frames** and **Compact Raid Frames: Heal Extension** (CompactRaidFrame_HealEx).**
+
+</div>
 
 Improved Raid Frames builds on the **Compact Raid Frames** backport of the retail raid frames. It adds configurable aura indicators, heal prediction and absorb shields, a right-click menu that no longer causes "action blocked" errors, Ctrl-click focus, and a set of performance improvements that matter most in 25 and 40-player raids.
 
