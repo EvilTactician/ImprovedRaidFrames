@@ -145,7 +145,8 @@ L["Aura Watch List"] = true
 L["auras_desc"] = "The list of buffs, debuffs, and/or wildcards to watch in this position"
 L["auras_usage"] = "Enter the names or spell IDs of each aura, each on a separate line"
 
-L["dispelWildcard_desc"] = "any dispellable debuffs"
+L["wildcards_intro"] = "Instead of a name, you can also enter one of these words to watch for a type of debuff"
+L["dispelWildcard_desc"] = "debuffs you can remove yourself (only on classes that can dispel: priest, paladin, shaman, druid, mage, warlock with a Felhunter)"
 L["poisonWildcard_desc"] = "any poison debuffs"
 L["curseWildcard_desc"] = "any curse debuffs"
 L["diseaseWildcard_desc"] = "any disease debuffs"

@@ -46,7 +46,14 @@ function ImprovedRaidFrames:CreateIndicatorOptions()
 						"\n" ..
 						L["instructions_desc1"] .. "." .. "\n" ..
 						"\n" ..
-						L["auras_usage"] .. "." .. "\n",
+						L["auras_usage"] .. "." .. "\n" ..
+						"\n" ..
+						L["wildcards_intro"] .. ":\n" ..
+						self.BLUE_COLOR:WrapTextInColorCode("Magic") .. ": " .. L["magicWildcard_desc"] .. "\n" ..
+						self.PURPLE_COLOR:WrapTextInColorCode("Curse") .. ": " .. L["curseWildcard_desc"] .. "\n" ..
+						self.GREEN_COLOR:WrapTextInColorCode("Poison") .. ": " .. L["poisonWildcard_desc"] .. "\n" ..
+						self.BROWN_COLOR:WrapTextInColorCode("Disease") .. ": " .. L["diseaseWildcard_desc"] .. "\n" ..
+						self.RED_COLOR:WrapTextInColorCode("Dispel") .. ": " .. L["dispelWildcard_desc"] .. "\n",
 				fontSize = "medium",
 				width = THIRD_WIDTH * 1.2,
 				order = 1,
