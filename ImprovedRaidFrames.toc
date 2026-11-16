@@ -2,7 +2,7 @@
 ## Title: Improved Raid Frames
 ## Notes: Extends Compact Raid Frames with aura indicators, heal prediction, a taint-free unit menu, Ctrl-click focus and raid performance improvements
 ## Author: EvilTactician (based on Enhanced Raid Frames by Britt W. Yazel and Compact Raid Frames by Tsoukie)
-## Version: 1.0.1
+## Version: 1.0.2
 ## DefaultState: enabled
 ## SavedVariables: ImprovedRaidFramesDB
 ## RequiredDeps: !!!ClassicAPI, CompactRaidFrame
