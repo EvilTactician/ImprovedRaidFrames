@@ -4,7 +4,7 @@ WoW 3.3.5a addon which replaces and improves upon both **Enhanced Raid Frames** 
 
 Improved Raid Frames builds on the **Compact Raid Frames** backport of the retail raid frames. It adds configurable aura indicators, heal prediction and absorb shields, a right-click menu that no longer causes "action blocked" errors, Ctrl-click focus, and a set of performance improvements that matter most in 25 and 40-player raids.
 
-> **Version 1.0.0.** Tested against Compact Raid Frames 1.14 and !!!ClassicAPI 1.32.
+> **Version 1.0.1.** Tested against Compact Raid Frames 1.14 and !!!ClassicAPI 1.32.
 
 ## Requirements
 
@@ -47,6 +47,19 @@ Compact Raid Frames opened Blizzard's shared unit menu from addon code. That tai
 - Raid frames are registered with **Clique** (`ClickCastFrames`) for players who use it.
 
 ### Aura indicators (from Enhanced Raid Frames)
+
+Every raid frame has 9 spots where a small icon can appear: Top-Left, Top, Top-Right, Left, Center, Right, Bottom-Left, Bottom and Bottom-Right. For each spot you choose what to watch for; the icon shows when the unit has that buff or debuff (for example your Renew, or a debuff that needs removing).
+
+**Setting one up:** Options → Improved Raid Frames → **Indicator Options** → pick a position → type into the **Aura Watch List** box, one entry per line:
+
+- a spell name, e.g. `Renew`
+- a spell ID, e.g. `139`
+- a debuff type: `magic`, `curse`, `poison` or `disease`, for any debuff of that type
+- `dispel`, for debuffs **you** can remove yourself. This only does something on classes that can dispel (priest, paladin, shaman, druid, mage, and a warlock with a Felhunter); on other classes it never shows.
+
+**Example:** put `magic` in Top-Right. On a GM account, target a unit and use `.aura 589` (Shadow Word: Pain, a magic debuff): an icon appears in the top-right corner of that unit's raid frame. `.unaura 589` removes it again.
+
+Each position also has options for how the icon looks and behaves: icon or plain colour, countdown text, stack size, cooldown swipe, glow, colours by time remaining or debuff type, "mine only", "show on me only", "missing only" and tooltips.
 
 All Enhanced Raid Frames features are kept: 9 indicator positions per frame, tracking by aura name, spell ID, debuff type (`magic`, `curse`, `poison`, `disease`) or the `dispel` wildcard; icon or colour display, countdown text, stack size, cooldown swipe, glow, colours by time remaining or debuff type, "mine only", "missing only", tooltips; target markers; stock buff/debuff/dispellable icon toggles; range fade with an optional custom range; background opacity; frame scale; profiles with dual-spec switching, and profile import/export.
 
