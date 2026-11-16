@@ -98,9 +98,10 @@ function ImprovedRaidFrames:CreateIconOptions()
 				type = "select",
 				name = L["Marker Position"],
 				desc = L["markerPosition_desc"],
-				values = self.POSITIONS,
+				-- Left / Center / Right (stored as the middle row of the old 9-position layout)
+				values = { [4] = L["Left"], [5] = L["Center"], [6] = L["Right"] },
 				get = function()
-					return self.db.profile.markerPosition
+					return 3 + self:GetTargetMarkerColumn()
 				end,
 				set = function(_, value)
 					self.db.profile.markerPosition = value

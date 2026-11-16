@@ -23,7 +23,10 @@ function ImprovedRaidFrames:SetTargetMarkerAppearance(frame)
 	local targetMarker = frame.IRF_targetMarkerFrame
 
 	local PAD = 3
-	local pos = self.db.profile.markerPosition
+
+	-- Markers sit on the middle row of the frame: Left, Center or Right. The offsets give full control from there.
+	-- (Settings from the 9-position layout map to their column: Top-Left / Left / Bottom-Left are Left, and so on.)
+	local column = self:GetTargetMarkerColumn()
 
 	local markerVerticalOffset = self.db.profile.markerVerticalOffset * frame:GetHeight()
 	local markerHorizontalOffset = self.db.profile.markerHorizontalOffset * frame:GetWidth()
@@ -36,26 +39,16 @@ function ImprovedRaidFrames:SetTargetMarkerAppearance(frame)
 		powerBarVertOffset = 0
 	end
 
-	-- Set position relative to frame
+	-- Set position relative to the whole frame, like the indicators. Enhanced Raid Frames anchored the marker to the
+	-- health bar (its texture's parent), which already excludes the power bar, and then also shifted it up for the power
+	-- bar, so the lower positions ended up above the upper ones.
 	targetMarker:ClearAllPoints()
-	if pos == 1 then
-		targetMarker:SetPoint("TOPLEFT", PAD + markerHorizontalOffset, -PAD + markerVerticalOffset)
-	elseif pos == 2 then
-		targetMarker:SetPoint("TOP", 0 + markerHorizontalOffset, -PAD + markerVerticalOffset)
-	elseif pos == 3 then
-		targetMarker:SetPoint("TOPRIGHT", -PAD + markerHorizontalOffset, -PAD + markerVerticalOffset)
-	elseif pos == 4 then
-		targetMarker:SetPoint("LEFT", PAD + markerHorizontalOffset, 0 + markerVerticalOffset + powerBarVertOffset / 2)
-	elseif pos == 5 then
-		targetMarker:SetPoint("CENTER", 0 + markerHorizontalOffset, 0 + markerVerticalOffset + powerBarVertOffset / 2)
-	elseif pos == 6 then
-		targetMarker:SetPoint("RIGHT", -PAD + markerHorizontalOffset, 0 + markerVerticalOffset + powerBarVertOffset / 2)
-	elseif pos == 7 then
-		targetMarker:SetPoint("BOTTOMLEFT", PAD + markerHorizontalOffset, PAD + markerVerticalOffset + powerBarVertOffset)
-	elseif pos == 8 then
-		targetMarker:SetPoint("BOTTOM", 0 + markerHorizontalOffset, PAD + markerVerticalOffset + powerBarVertOffset)
-	elseif pos == 9 then
-		targetMarker:SetPoint("BOTTOMRIGHT", -PAD + markerHorizontalOffset, PAD + markerVerticalOffset + powerBarVertOffset)
+	if column == 1 then
+		targetMarker:SetPoint("LEFT", frame, "LEFT", PAD + markerHorizontalOffset, markerVerticalOffset + powerBarVertOffset / 2)
+	elseif column == 3 then
+		targetMarker:SetPoint("RIGHT", frame, "RIGHT", -PAD + markerHorizontalOffset, markerVerticalOffset + powerBarVertOffset / 2)
+	else
+		targetMarker:SetPoint("CENTER", frame, "CENTER", markerHorizontalOffset, markerVerticalOffset + powerBarVertOffset / 2)
 	end
 
 	-- Set the marker size
@@ -120,6 +113,13 @@ function ImprovedRaidFrames:UpdateAllTargetMarkers()
 	self:ForEachFrame(function(frame)
 		self:UpdateTargetMarker(frame)
 	end)
+end
+
+--- The marker's column: 1 = Left, 2 = Center, 3 = Right
+---@return number
+function ImprovedRaidFrames:GetTargetMarkerColumn()
+	local pos = tonumber(self.db.profile.markerPosition) or 5
+	return ((pos - 1) % 3) + 1
 end
 
 --- Clear the target marker for a given frame

@@ -54,6 +54,7 @@ Fixed compared to Enhanced Raid Frames:
 
 - The **`dispel`** wildcard works again. It relied on LibDispel, which the 3.3.5a backport doesn't have, so it never matched. Improved Raid Frames checks your spellbook (and your Felhunter's) for dispel spells instead.
 - **Mine only** for indicators had an operator precedence bug.
+- **Target markers** were placed relative to the health bar while also being shifted up for the power bar, so their positions came out jumbled. They now have three positions (Left, Center, Right on the middle of the frame) plus the horizontal and vertical offsets for fine-tuning; older 9-position settings map to the matching column.
 - A watched spell ID could match part of a longer ID (774 also matched 17740).
 - Changing an indicator's aura list now shows straight away, instead of at the next buff change.
 - Importing a profile no longer re-creates the settings database, which used to stop profile switching from refreshing the frames.
