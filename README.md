@@ -42,8 +42,8 @@ Compact Raid Frames opened Blizzard's shared unit menu from addon code. That tai
 
 - **Ctrl-left-click** a raid frame to set your focus to that unit, in or out of combat.
 - The menu's **Set Focus** line works out of combat. In combat the game doesn't allow addons to show secure buttons, so the line is greyed out with a reminder to use Ctrl-click.
-- **Main Tank** and **Main Assist** can be set from the menu (raids only, for the leader and assistants). Compact Raid Frames used Blizzard's raid member menu, which doesn't have them.
-- The menu also has: whisper, inspect, achievements, trade, follow, raid target icons, promote to leader/assistant, demote, master looter, uninvite/remove from raid, and for yourself loot method, loot threshold, convert to raid/party and leave party.
+- **Main Tank** and **Main Assist** can be set from the menu, for anyone including yourself (raids only, for the leader and assistants, out of combat). Compact Raid Frames used Blizzard's raid member menu, which doesn't have them. Setting them is also Blizzard-only, so these lines run Blizzard's own `/maintank` and `/mainassist` commands through a secure button.
+- The menu also has: whisper, inspect, achievements, trade, follow, promote to leader/assistant, demote, master looter, uninvite/remove from raid, and for yourself loot method, loot threshold, convert to raid/party and leave party. Raid target icons are on Compact Raid Frames' slide-out manager.
 - Raid frames are registered with **Clique** (`ClickCastFrames`) for players who use it.
 
 ### Aura indicators (from Enhanced Raid Frames)

@@ -9,8 +9,10 @@
 -- which has no Main Tank / Main Assist entries.
 --
 -- We build the menu with !!!ClassicAPI's separate dropdown copy (C_UIDropDownMenu), so Blizzard's menu code is never
--- touched. Focus can't be set from addon code at all; Focus.lua puts a secure button over our "Set Focus" line when
--- the menu opens out of combat, and Ctrl-left-click focuses at any time.
+-- touched. Setting focus and Main Tank / Main Assist are Blizzard-only actions that addon code can't perform; Focus.lua
+-- puts secure buttons over those lines when the menu opens out of combat, and Ctrl-left-click focuses at any time.
+--
+-- Raid target icons are left to Compact Raid Frames' slide-out manager.
 
 -- Create a local handle to our addon table
 ---@type ImprovedRaidFrames
@@ -23,8 +25,6 @@ if not (C_UIDropDownMenu_Initialize and C_ToggleDropDownMenu and C_UIDropDownMen
 	ImprovedRaidFrames:FeatureUnavailable("unit menu")
 	return
 end
-
-local RAID_TARGET_TEXTURE = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_"
 
 -- Loot methods in the order Blizzard's menu shows them
 local LOOT_METHODS = {
@@ -84,31 +84,6 @@ end
 ------------------------------- Menu levels -----------------------------
 -------------------------------------------------------------------------
 
---- Raid target icon submenu
-local function AddRaidTargetButtons(unit, level)
-	local current = GetRaidTargetIndex(unit)
-	for i = 1, 8 do
-		AddButton(level, _G["RAID_TARGET_" .. i] or ("Icon " .. i), function()
-			-- Choosing the icon the unit already has removes it, like Blizzard's menu
-			if GetRaidTargetIndex(unit) == i then
-				SetRaidTarget(unit, 0)
-			else
-				SetRaidTarget(unit, i)
-			end
-		end, {
-			icon = RAID_TARGET_TEXTURE .. i,
-			notCheckable = false,
-			checked = (current == i),
-		})
-	end
-	AddButton(level, RAID_TARGET_NONE or NONE, function()
-		SetRaidTarget(unit, 0)
-	end, {
-		notCheckable = false,
-		checked = not current,
-	})
-end
-
 --- Loot method submenu
 local function AddLootMethodButtons(level)
 	local current = GetLootMethod()
@@ -144,24 +119,57 @@ local function AddLootThresholdButtons(level)
 	end
 end
 
---- The "Set Focus" / "Clear Focus" line. Focus.lua puts a secure button over it when the menu opens out of combat.
-local function AddFocusButton(unit, level)
-	local isFocus = UnitIsUnit(unit, "focus")
-	local text = isFocus and (CLEAR_FOCUS or L["Clear Focus"]) or (SET_FOCUS or L["Set Focus"])
-	local index
+--- Add a line whose action is Blizzard-only. Out of combat, Focus.lua places a secure button over it that performs the
+--- action; in combat that isn't possible, so the line is shown greyed out.
+---@param level number @Menu level
+---@param text string @Line text
+---@param combatText string @Text added to the greyed-out line in combat
+---@param secure table @Attributes for the secure button: { type = ..., unit = ..., macrotext = ... }
+---@param options table|nil @Extra info fields
+local function AddSecureButton(level, text, combatText, secure, options)
 	if InCombatLockdown() then
-		-- In combat the secure button can't be placed, so show how to focus instead
-		index = AddButton(level, text .. " " .. L["(Ctrl-click)"], nil, { disabled = true })
-		dropDown.focusButtonIndex = nil
-	else
-		index = AddButton(level, text, function()
-			-- Only reached if the secure button wasn't over this line
-			ImprovedRaidFrames:Print(L["focusHint"])
-		end)
-		dropDown.focusButtonIndex = index
+		local info = { disabled = true }
+		if options then
+			for k, v in pairs(options) do
+				info[k] = v
+			end
+		end
+		AddButton(level, text .. " " .. combatText, nil, info)
+		return
 	end
-	dropDown.focusIsClear = isFocus
-	return index
+
+	secure.index = AddButton(level, text, function()
+		-- Only reached if the secure button wasn't over this line
+		ImprovedRaidFrames:Print(L["secureHint"])
+	end, options)
+	dropDown.secureLines[#dropDown.secureLines + 1] = secure
+end
+
+--- The "Set Focus" / "Clear Focus" line
+local function AddFocusButton(unit, level)
+	if UnitIsUnit(unit, "focus") then
+		-- There is no secure "clear focus" action type we can rely on, so use the macro command
+		AddSecureButton(level, CLEAR_FOCUS or L["Clear Focus"], L["(Ctrl-click)"], { type = "macro", macrotext = "/clearfocus" })
+	else
+		AddSecureButton(level, SET_FOCUS or L["Set Focus"], L["(Ctrl-click)"], { type = "focus", unit = unit })
+	end
+end
+
+--- Main Tank / Main Assist lines (raid only, for the leader and assistants).
+--- Setting these is Blizzard-only, so they run Blizzard's own /maintank, /mainassist (and "off") commands.
+local function AddAssignmentButtons(unit, level, name)
+	local isMainTank = GetPartyAssignment("MAINTANK", unit) and true or false
+	local isMainAssist = GetPartyAssignment("MAINASSIST", unit) and true or false
+
+	local mainTankCommand = isMainTank and (SLASH_MAINTANKOFF1 or "/maintankoff") or (SLASH_MAINTANKON1 or "/maintank")
+	local mainAssistCommand = isMainAssist and (SLASH_MAINASSISTOFF1 or "/mainassistoff") or (SLASH_MAINASSISTON1 or "/mainassist")
+
+	AddSecureButton(level, MAIN_TANK or L["Main Tank"], L["(out of combat)"],
+			{ type = "macro", macrotext = mainTankCommand .. " " .. name },
+			{ notCheckable = false, checked = isMainTank })
+	AddSecureButton(level, MAIN_ASSIST or L["Main Assist"], L["(out of combat)"],
+			{ type = "macro", macrotext = mainAssistCommand .. " " .. name },
+			{ notCheckable = false, checked = isMainAssist })
 end
 
 --- Menu for a player in our party or raid
@@ -189,11 +197,6 @@ local function AddGroupMemberButtons(unit, level)
 		FollowUnit(name)
 	end, { disabled = not connected })
 
-	-- Raid target icons: anyone in a party, only the leader and assistants in a raid
-	if not inRaid or isLeader or isAssistant then
-		AddButton(level, RAID_TARGET_ICON or L["Raid Target Icon"], nil, { hasArrow = true, value = "RAID_TARGET" })
-	end
-
 	-- Leader actions
 	if isLeader then
 		AddButton(level, L["Promote to Leader"], function()
@@ -215,22 +218,7 @@ local function AddGroupMemberButtons(unit, level)
 
 	-- Main Tank / Main Assist: raid only, for the leader and assistants
 	if inRaid and (isLeader or isAssistant) and raidIndex then
-		local isMainTank = GetPartyAssignment("MAINTANK", unit)
-		local isMainAssist = GetPartyAssignment("MAINASSIST", unit)
-		AddButton(level, MAIN_TANK or L["Main Tank"], function()
-			if isMainTank then
-				ClearPartyAssignment("MAINTANK", name)
-			else
-				SetPartyAssignment("MAINTANK", name)
-			end
-		end, { notCheckable = false, checked = isMainTank and true or false })
-		AddButton(level, MAIN_ASSIST or L["Main Assist"], function()
-			if isMainAssist then
-				ClearPartyAssignment("MAINASSIST", name)
-			else
-				SetPartyAssignment("MAINASSIST", name)
-			end
-		end, { notCheckable = false, checked = isMainAssist and true or false })
+		AddAssignmentButtons(unit, level, name)
 	end
 
 	-- Master looter
@@ -250,12 +238,13 @@ end
 
 --- Menu for ourselves
 local function AddSelfButtons(unit, level)
-	local inRaid, inParty, isLeader = GetGroupInfo(unit)
+	local inRaid, inParty, isLeader, isAssistant = GetGroupInfo(unit)
 
 	AddFocusButton(unit, level)
 
-	if not inRaid or isLeader or IsRaidOfficer() then
-		AddButton(level, RAID_TARGET_ICON or L["Raid Target Icon"], nil, { hasArrow = true, value = "RAID_TARGET" })
+	-- Main Tank / Main Assist on yourself: raid only, for the leader and assistants
+	if inRaid and (isLeader or isAssistant) then
+		AddAssignmentButtons(unit, level, UnitName("player"))
 	end
 
 	if isLeader then
@@ -282,13 +271,7 @@ end
 
 --- Menu for a vehicle, a pet, or any other unit
 local function AddOtherButtons(unit, level, isVehicle)
-	local inRaid, _, isLeader, isAssistant = GetGroupInfo(unit)
-
 	AddFocusButton(unit, level)
-
-	if not inRaid or isLeader or isAssistant then
-		AddButton(level, RAID_TARGET_ICON or L["Raid Target Icon"], nil, { hasArrow = true, value = "RAID_TARGET" })
-	end
 
 	if isVehicle then
 		AddButton(level, L["Leave Vehicle"], function()
@@ -306,6 +289,10 @@ local function InitializeMenu(self, level)
 	level = level or 1
 
 	if level == 1 then
+		-- The lines that get a secure button, rebuilt every time the menu opens
+		dropDown.secureLines = dropDown.secureLines or {}
+		wipe(dropDown.secureLines)
+
 		-- Title: the unit's name
 		AddButton(level, GetUnitName(unit, true) or UNKNOWN, nil, { isTitle = true })
 
@@ -325,9 +312,7 @@ local function InitializeMenu(self, level)
 		end)
 	elseif level == 2 then
 		local value = C_UIDROPDOWNMENU_MENU_VALUE
-		if value == "RAID_TARGET" then
-			AddRaidTargetButtons(unit, level)
-		elseif value == "LOOT_METHOD" then
+		if value == "LOOT_METHOD" then
 			AddLootMethodButtons(level)
 		elseif value == "LOOT_THRESHOLD" then
 			AddLootThresholdButtons(level)
@@ -355,12 +340,11 @@ function ImprovedRaidFrames.ShowUnitMenu(frame)
 
 	dropDown.unit = unit
 	dropDown.ownerFrame = frame
-	dropDown.focusButtonIndex = nil
 	C_ToggleDropDownMenu(1, nil, dropDown, frame:GetName(), 0, 0)
 
-	-- Put the secure focus button over our "Set Focus" line
+	-- Put the secure buttons over the lines with Blizzard-only actions (Set Focus, Main Tank, Main Assist)
 	if C_DropDownList1:IsShown() and C_UIDROPDOWNMENU_OPEN_MENU == dropDown then
-		ImprovedRaidFrames:PlaceMenuFocusButton(dropDown)
+		ImprovedRaidFrames:PlaceMenuSecureButtons(dropDown)
 	end
 end
 
